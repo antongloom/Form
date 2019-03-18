@@ -5,38 +5,23 @@
       <div class="container__form">
         <div class="form">
           <ul>
-            <li>
-              <div class="form__title">
-                <div class="title__name">Name</div>
-                <div class="title__icon">
-                  <img src="./assets/images/error.png" alt="Img">
+            <li v-for="form in forms">
+               <div v-if="form.type === 'text'">
+                <div class="form__title">
+                  <div class="title__name">{{form.title}}</div>
+                  <div class="title__icon">
+                    <div :class="{iconError: form.error}"></div>
+                    <div :class="{iconSuccess : form.success}"></div>
+                  </div>
+                </div> 
+                 <input @blur="onBlur()" @focus="onFocus()"  v-model="form.validate" :type="form.type">
+               </div>
+               <div v-if="form.type === 'textarea'">
+                 <div class="form__title">
+                  <div class="title__name">{{form.title}}</div>
                 </div>
-              </div>
-              <input type="text">
-            </li>
-            <li>
-              <div class="form__title">
-                <div class="title__name">Email</div>
-                <div class="title__icon">
-                  <img src="./assets/images/error.png" alt="Img">
-                </div>
-              </div>
-              <input type="text">
-            </li>
-            <li>
-              <div class="form__title">
-                <div class="title__name">Phone</div>
-                <div class="title__icon">
-                  <img src="./assets/images/error.png" alt="Img">
-                </div>
-              </div>
-              <input type="text">
-            </li>
-            <li>
-              <div class="form__title">
-                <div class="title__name">Message</div>
-              </div>
-              <textarea></textarea>
+                 <textarea></textarea>
+               </div>
             </li>
           </ul>
           <button>Send</button>
@@ -48,7 +33,50 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data() {
+    return {
+      forms: [
+        {
+          id: 0,
+          title: 'Name',
+          type: 'text',
+          validate: '',
+          error: false,
+          success: false,
+        },
+        {
+          id: 1,
+          title: 'Email',
+          type: 'text',
+          validate: ''
+        },
+        {
+          id: 2,
+          title: 'Phone',
+          type: 'text',
+          validate: ''
+        },
+        {
+          id: 3,
+          title: 'Message',
+          type: 'textarea'
+        },
+      ]
+    }
+  },
+  methods: {
+      onBlur(){
+        if(this.forms[0].validate === ''){
+          this.forms[0].error = true
+        }
+      },
+      onFocus(){
+        if(this.forms[0].validate){
+          this.forms[0].error = false
+        }
+      },
+    },
 }
 </script>
 
@@ -83,10 +111,21 @@ export default {
     color: #000;
   }
   .title__icon{
-    img{
-      height: 15px;
-    }
+    height: 15px;
+    width: 15px;
   }
+}
+
+.iconError{
+  height: 15px;
+  background: url('./assets/images/error.png');
+  background-size: cover;
+}
+
+.iconSuccess{
+  height: 15px;
+  background: url('./assets/images/valid.png');
+  background-size: cover;
 }
 
 input{
