@@ -1,24 +1,35 @@
 <template>
   <div id="#app">
     <div class="app__container">
-      <div class="container__progressbar"></div>
+      <div class="container__blog">
+        <div class="blog__progress">
+          <div class="progress__bar" :style="progressWidth"></div>
+        </div>
+      </div>
       <div class="container__form">
         <div class="form">
           <ul>
-            <li v-for="form in forms">
-               <div v-if="form.type === 'text'">
+            <li v-for="(item, index) in info">
+               <div v-if="item.type === 'text'">
                 <div class="form__title">
-                  <div class="title__name">{{form.title}}</div>
+                  <div class="title__name">{{item.name}}</div>
                   <div class="title__icon">
-                    <div :class="{iconError: form.error}"></div>
-                    <div :class="{iconSuccess : form.success}"></div>
+                   <!-- <div :class="{iconError: item.error}"></div>
+                    <div :class="{iconSuccess : item.success}"></div> -->
+                    <div v-if="controls[index].activated"
+                         :class="controls[index].error ? 
+                         'iconError' : 'iconSuccess'"
+                          ></div>
                   </div>
-                </div> 
-                 <input @blur="onBlur()" @focus="onFocus()"  v-model="form.validate" :type="form.type">
+                 </div> 
+                 <input :type="item.type"
+                        :value="item.value"
+                        @input = "onInput(index, $event.target.value)"
+                        >
                </div>
-               <div v-if="form.type === 'textarea'">
+               <div v-if="item.type === 'textarea'">
                  <div class="form__title">
-                  <div class="title__name">{{form.title}}</div>
+                 <div class="title__name">{{item.name}}</div>
                 </div>
                  <textarea></textarea>
                </div>
@@ -36,47 +47,69 @@ export default {
   name: 'App',
   data() {
     return {
-      forms: [
+      info: [
         {
-          id: 0,
-          title: 'Name',
+          name: 'Name',
+          value: '',
+          pattern: /^[a-zA-Z]{2,30}$/,
           type: 'text',
-          validate: '',
-          error: false,
-          success: false,
         },
         {
-          id: 1,
-          title: 'Email',
+          name: 'Phone',
+          value: '',
+          pattern: /^[0-9]{7,14}$/,
           type: 'text',
-          validate: ''
         },
         {
-          id: 2,
-          title: 'Phone',
+          name: 'Email',
+          value: '',
+          pattern: /.+/,
           type: 'text',
-          validate: ''
         },
         {
-          id: 3,
-          title: 'Message',
+          name: 'Message',
+          value: '',
           type: 'textarea'
         },
-      ]
+      ],
+      controls: []
+    }
+  },
+  beforeMount(){
+    for(let i = 0; i < this.info.length; i++){
+        this.controls.push({
+          error: true,
+          activated: false
+        })
     }
   },
   methods: {
-      onBlur(){
-        if(this.forms[0].validate === ''){
-          this.forms[0].error = true
+      onInput(index, value){
+        let data = this.info[index];
+        let control = this.controls[index];
+        
+        data.value = value;
+        control.error = !data.pattern.test(value);
+        control.activated = true;
+      }
+  },
+  computed: {
+    done(){
+      let done = 0;
+      for(let i = 0; i < this.controls.length; i++){
+        if(!this.controls[i].error){
+          done++;
         }
-      },
-      onFocus(){
-        if(this.forms[0].validate){
-          this.forms[0].error = false
-        }
-      },
+      }
+      return done;
     },
+    progressWidth(){
+      return{
+        //width: (this.done / this.info.length * 100) + '%'
+          width: this.done * 33.33 + '%'
+      }
+    }
+  }
 }
 </script>
 
@@ -87,8 +120,20 @@ export default {
 .app__container{
   max-width: 550px;
   margin: 100px auto;
-  .container__progressbar{
-    
+  .container__blog{
+    .blog__progress{
+      height: 40px;
+      width: 100%;
+      border-radius: 50px;
+      margin-bottom: 40px;
+      background: #ddd;
+      overflow: hidden;
+      .progress__bar{
+        height: 100%;
+        background: blue;
+        width: 0%;
+      }
+    }
   }
   .container__form{
     ul{
