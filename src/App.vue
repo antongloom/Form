@@ -35,7 +35,7 @@
                </div>
             </li>
           </ul>
-          <button>Send</button>
+          <button :class="{btnCursor: activeBtn}" v-model="buttonBlock" :disabled="disabled">Send</button>
         </div>
       </div>
     </div>
@@ -47,6 +47,8 @@ export default {
   name: 'App',
   data() {
     return {
+      disabled: true,
+      activeBtn: true,
       info: [
         {
           name: 'Name',
@@ -107,6 +109,15 @@ export default {
       return{
         //width: (this.done / this.info.length * 100) + '%'
           width: this.done * 33.33 + '%'
+      }
+    },
+    buttonBlock(){
+      if(this.done < 3){
+        this.disabled = true
+        this.activeBtn = true
+      }else{
+        this.disabled = false
+        this.activeBtn = false
       }
     }
   }
@@ -218,6 +229,10 @@ button{
     background: green;
     color: #fff;
   }
+}
+
+.btnCursor{
+  cursor: no-drop;
 }
 
 
